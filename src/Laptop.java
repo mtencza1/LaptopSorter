@@ -2,9 +2,7 @@
 
 
 
-import java.util.Scanner;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
 
 
 public class Laptop {
@@ -12,22 +10,57 @@ public class Laptop {
     double procSpeed;
     int memory;
     int hdd;
+    int id;
     
     public Laptop(String brand, double procSpeed, int memory, int hdd){
+        Random r = new Random();
         this.brand = brand;
         this.procSpeed = procSpeed;
         this.memory = memory;
         this.hdd = hdd;
+
     }
-    
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public double getProcSpeed() {
+        return procSpeed;
+    }
+
+    public int getMemory() {
+        return memory;
+    }
+
+    public int getHdd() {
+        return hdd;
+    }
+
+    static Comparator<Integer> integerComparator = (o1, o2) ->  o1.compareTo(o2);
     static Comparator<Integer> intComparator = new Comparator<Integer>() {
         @Override
         public int compare(Integer o1, Integer o2) {
             return (o1.compareTo(o2));   
         }
     };
+
+    static Comparator<Laptop> brandComparator = (o1,o2) -> {
+        int a,b;
+        a = Character.getNumericValue(o1.brand.charAt(0));
+        b = Character.getNumericValue(o2.brand.charAt(0));
+        if(a<b){
+            return -1;
+        }
+        else if(a>b){
+            return 1;
+        }
+        else{
+            return 0;
+        }
+    };
     
-    static Comparator<Laptop> brandComparator = new Comparator<Laptop>() {
+  /*  static Comparator<Laptop> brandComparator = new Comparator<Laptop>() {
         @Override
         public int compare(Laptop o1, Laptop o2) {
             int a,b;
@@ -44,7 +77,7 @@ public class Laptop {
             }
         }
     };
-    
+    */
     static Comparator<Laptop> processorComparator = new Comparator<Laptop>() {
         @Override
         public int compare(Laptop o1, Laptop o2) {
@@ -155,6 +188,10 @@ public class Laptop {
    
     
     public static void main(String[] args) {
+        SQLiteDB db = new SQLiteDB("test2");
+        db.createTable();
+        db.insert(new Laptop("Lenovo",50,20,300));
+
         Scanner scanner = new Scanner(System.in);
         System.out.println("Input data type (must be ’int’ or ’laptop’):");
         String inputDataType = scanner.nextLine().trim();
@@ -163,23 +200,23 @@ public class Laptop {
         switch (inputDataType) {
             case "int":
                 ArrayList<Integer> integers = readIntegerInputs(scanner);
-                Sorter<Integer> intSorter = new Quicksorter<>(intComparator,
+                Sorter<Integer> intSorter = new Quicksorter<>(integerComparator,
                                                               integers);
-               
+
                 intSorter.sort();
                 System.out.println(getStringJoinedBy(integers, ", "));
                 break;
-                
+
             case "laptop":
                 ArrayList<Laptop> laptops = readLaptopInputs(scanner);
                 Sorter<Laptop> laptopSorter = new Quicksorter<>(brandComparator,
                                                                 laptops);
-                
+
                 laptopSorter.sort();
                 System.out.print("Sorted by brand name:\n\t");
                 System.out.println(getStringJoinedBy(laptops, "\n\t"));
                 System.out.println();
-                
+
                 laptopSorter.setComparator(processorComparator);
                 laptopSorter.sort();
                 System.out.print("Sorted by processor speed:\n\t");
