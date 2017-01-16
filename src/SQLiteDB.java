@@ -139,6 +139,35 @@ public class SQLiteDB {
         System.out.println("Operation done successfully");
     }
 
+
+    public void selectAll(){
+        Connection c = null;
+        Statement s = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            c = DriverManager.getConnection("jdbc:sqlite:" + DBName + ".db");
+            c.setAutoCommit(false);
+            String sql = "SELECT id, brandname, procspeed, ram, diskcap FROM LAPTOPS";
+
+
+            s = c.createStatement();
+            ResultSet rs = s.executeQuery(sql);
+
+                // loop through the result set
+                while (rs.next()) {
+                    System.out.println(rs.getInt("id") + "\t" +
+                            rs.getString("brandname") + "\t" +
+                            rs.getDouble("procspeed") + "\t" +
+                            rs.getInt("ram") + "\t" +
+                            rs.getInt("diskcap"));
+                }
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+
+
     public void update(){
         Connection c = null;
         Statement stmt = null;

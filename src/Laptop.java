@@ -188,7 +188,7 @@ public class Laptop {
         return list;
     }
     
-    
+
     public static void main(String[] args) {
         SQLiteDB db = new SQLiteDB("Laptop Warehouse");
         db.createTable();
@@ -199,6 +199,7 @@ public class Laptop {
         for(Laptop laptop:laptops){
             db.insert(laptop);
         }
+        db.selectAll();
 
         Sorter<Laptop> laptopSorter = new Quicksorter<>(brandComparator, laptops);
 
