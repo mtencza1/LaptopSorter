@@ -200,6 +200,8 @@ public class Laptop {
             db.insert(laptop);
         }
         db.selectAll();
+        db.delete(1);
+        db.selectAll();
 
         Sorter<Laptop> laptopSorter = new Quicksorter<>(brandComparator, laptops);
 
@@ -223,8 +225,6 @@ public class Laptop {
         laptopSorter.sort();
         System.out.print("Sorted by hard disk capacity:\n\t");
         System.out.println(getStringJoinedBy(laptops, "\n\t"));
-
-        
 
         }
 

@@ -10,10 +10,11 @@ import java.sql.*;
 public class SQLiteDB {
 
     public final String DBName;
+    private Connection c;
 
     public SQLiteDB(String DBName){
         this.DBName = DBName;
-        Connection c = null;
+
         try {
             Class.forName("org.sqlite.JDBC");
             c = DriverManager.getConnection("jdbc:sqlite:" + DBName + ".db");
@@ -25,11 +26,11 @@ public class SQLiteDB {
     }
 
     public void createTable(){
-        Connection c = null;
+
         Statement stmt = null;
         try {
             Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:" + DBName + ".db");
+
             System.out.println("Opened database successfully");
 
             stmt = c.createStatement();
@@ -41,7 +42,7 @@ public class SQLiteDB {
                     " DISKCAP         INT)";
             stmt.executeUpdate(sql);
             stmt.close();
-            c.close();
+
 
         } catch ( Exception e ) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
@@ -51,11 +52,11 @@ public class SQLiteDB {
     }
 
     public void insert(Laptop laptop){
-        Connection c = null;
+
         Statement stmt = null;
         try {
             Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:" + DBName + ".db");
+
             c.setAutoCommit(false);
             System.out.println("Opened database successfully");
 
@@ -73,15 +74,8 @@ public class SQLiteDB {
 
             prepSt.executeUpdate();
 
-
-
-/*
-            sql = "INSERT INTO LAPTOPS (ID,BRANDNAME,PROCSPEED,RAM,DISKCAP) " +
-                    "VALUES (2, 'Allen', 25, 'Texas', 15000.00 );";
-            stmt.executeUpdate(sql);
-            */
             c.commit();
-            c.close();
+
         } catch ( Exception e ) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.exit(0);
@@ -106,11 +100,11 @@ public class SQLiteDB {
 
 
     public void select(){
-        Connection c = null;
+
         Statement stmt = null;
         try {
             Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:" + DBName + ".db");
+
             c.setAutoCommit(false);
             System.out.println("Opened database successfully");
 
@@ -141,11 +135,10 @@ public class SQLiteDB {
 
 
     public void selectAll(){
-        Connection c = null;
+
         Statement s = null;
         try {
             Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:" + DBName + ".db");
             c.setAutoCommit(false);
             String sql = "SELECT id, brandname, procspeed, ram, diskcap FROM LAPTOPS";
 
@@ -161,6 +154,10 @@ public class SQLiteDB {
                             rs.getInt("ram") + "\t" +
                             rs.getInt("diskcap"));
                 }
+
+            rs.close();
+            s.close();
+
         }catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -182,23 +179,6 @@ public class SQLiteDB {
             stmt.executeUpdate(sql);
             c.commit();
 
-            ResultSet rs = stmt.executeQuery( "SELECT * FROM LAPTOPS;" );
-            while ( rs.next() ) {
-                int id = rs.getInt("id");
-                String  name = rs.getString("name");
-                int age  = rs.getInt("age");
-                String  address = rs.getString("address");
-                float salary = rs.getFloat("salary");
-                System.out.println( "ID = " + id );
-                System.out.println( "NAME = " + name );
-                System.out.println( "AGE = " + age );
-                System.out.println( "ADDRESS = " + address );
-                System.out.println( "SALARY = " + salary );
-                System.out.println();
-            }
-            rs.close();
-            stmt.close();
-            c.close();
         } catch ( Exception e ) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.exit(0);
@@ -206,37 +186,23 @@ public class SQLiteDB {
         System.out.println("Operation done successfully");
     }
 
-    public void delete(){
-        Connection c = null;
+    public void delete(int ID){
+
         Statement stmt = null;
         try {
             Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:" + DBName + ".db");
+
             c.setAutoCommit(false);
             System.out.println("Opened database successfully");
 
+
             stmt = c.createStatement();
-            String sql = "DELETE from LAPTOPS where ID=2;";
+            String sql = "DELETE from LAPTOPS where ID=" + ID + ";";
             stmt.executeUpdate(sql);
             c.commit();
 
-            ResultSet rs = stmt.executeQuery( "SELECT * FROM LAPTOPS;" );
-            while ( rs.next() ) {
-                int id = rs.getInt("id");
-                String  name = rs.getString("name");
-                int age  = rs.getInt("age");
-                String  address = rs.getString("address");
-                float salary = rs.getFloat("salary");
-                System.out.println( "ID = " + id );
-                System.out.println( "NAME = " + name );
-                System.out.println( "AGE = " + age );
-                System.out.println( "ADDRESS = " + address );
-                System.out.println( "SALARY = " + salary );
-                System.out.println();
-            }
-            rs.close();
-            stmt.close();
-            c.close();
+
+
         } catch ( Exception e ) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.exit(0);
