@@ -1,13 +1,11 @@
 /**
  * Created by Work on 1/15/2017.
  */
-import com.sun.glass.ui.Cursor;
-import com.sun.glass.ui.EventLoop;
+
 import org.sqlite.core.DB;
-import org.w3c.dom.Text;
 
 import java.sql.*;
-import java.util.UUID;
+
 
 public class SQLiteDB {
 
@@ -44,6 +42,7 @@ public class SQLiteDB {
             stmt.executeUpdate(sql);
             stmt.close();
             c.close();
+
         } catch ( Exception e ) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.exit(0);

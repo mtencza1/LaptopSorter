@@ -11,6 +11,8 @@ public class Laptop {
     int memory;
     int hdd;
     int id;
+
+    private static ArrayList<Laptop> laptops = new ArrayList<>();
     
     public Laptop(String brand, double procSpeed, int memory, int hdd){
         Random r = new Random();
@@ -137,9 +139,10 @@ public class Laptop {
                 + "line seperated by spaces.");
         System.out.println("Press enter to type another or Type 'done' when finished inputing laptops");
         
-        ArrayList<Laptop> laptops = new ArrayList<>();
+
         String inputData = "";
         int counter = 0;
+        laptops.add(new Laptop("Lenovo",50,20,300));
         
         while(!inputData.equals("done")){
             if(counter>0){
@@ -185,60 +188,45 @@ public class Laptop {
         return list;
     }
     
-   
     
     public static void main(String[] args) {
-        SQLiteDB db = new SQLiteDB("test2");
+        SQLiteDB db = new SQLiteDB("Laptop Warehouse");
         db.createTable();
-        db.insert(new Laptop("Lenovo",50,20,300));
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Input data type (must be ’int’ or ’laptop’):");
-        String inputDataType = scanner.nextLine().trim();
-        if (!inputDataType.equals("int") && !inputDataType.equals("laptop"))
-            throw new IllegalArgumentException("Invalid data type specified.");
-        switch (inputDataType) {
-            case "int":
-                ArrayList<Integer> integers = readIntegerInputs(scanner);
-                Sorter<Integer> intSorter = new Quicksorter<>(integerComparator,
-                                                              integers);
 
-                intSorter.sort();
-                System.out.println(getStringJoinedBy(integers, ", "));
-                break;
-
-            case "laptop":
-                ArrayList<Laptop> laptops = readLaptopInputs(scanner);
-                Sorter<Laptop> laptopSorter = new Quicksorter<>(brandComparator,
-                                                                laptops);
-
-                laptopSorter.sort();
-                System.out.print("Sorted by brand name:\n\t");
-                System.out.println(getStringJoinedBy(laptops, "\n\t"));
-                System.out.println();
-
-                laptopSorter.setComparator(processorComparator);
-                laptopSorter.sort();
-                System.out.print("Sorted by processor speed:\n\t");
-                System.out.println(getStringJoinedBy(laptops, "\n\t"));
-                System.out.println();
-                
-                laptopSorter.setComparator(memoryComparator);
-                laptopSorter.sort();
-                System.out.print("Sorted by RAM:\n\t");
-                System.out.println(getStringJoinedBy(laptops, "\n\t"));
-                System.out.println();
-                
-                laptopSorter.setComparator(hddComparator);
-                laptopSorter.sort();
-                System.out.print("Sorted by hard disk capacity:\n\t");
-                System.out.println(getStringJoinedBy(laptops, "\n\t"));
-                break;
-        
-            default:
-                throw new IllegalArgumentException("Invalid data type specified.");
+        ArrayList<Laptop> laptops = readLaptopInputs(scanner);
+        for(Laptop laptop:laptops){
+            db.insert(laptop);
         }
-    }
+
+        Sorter<Laptop> laptopSorter = new Quicksorter<>(brandComparator, laptops);
+
+        laptopSorter.sort();
+        System.out.print("Sorted by brand name:\n\t");
+        System.out.println(getStringJoinedBy(laptops, "\n\t"));
+        System.out.println();
+        laptopSorter.setComparator(processorComparator);
+        laptopSorter.sort();
+        System.out.print("Sorted by processor speed:\n\t");
+        System.out.println(getStringJoinedBy(laptops, "\n\t"));
+        System.out.println();
+
+        laptopSorter.setComparator(memoryComparator);
+        laptopSorter.sort();
+        System.out.print("Sorted by RAM:\n\t");
+        System.out.println(getStringJoinedBy(laptops, "\n\t"));
+        System.out.println();
+                
+        laptopSorter.setComparator(hddComparator);
+        laptopSorter.sort();
+        System.out.print("Sorted by hard disk capacity:\n\t");
+        System.out.println(getStringJoinedBy(laptops, "\n\t"));
+
+        
+
+        }
+
     
 }
 
