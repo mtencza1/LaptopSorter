@@ -2,6 +2,8 @@
 
 
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 
 
@@ -11,21 +13,23 @@ public class Laptop {
     int memory;
     int hdd;
     int id;
+    static SQLiteDB warehouse;
 
     private static ArrayList<Laptop> laptops = new ArrayList<>();
     
-    public Laptop(String brand, double procSpeed, int memory, int hdd){
-        Random r = new Random();
+    public Laptop(String brand, double procSpeed, int memory, int hdd,int id){
         this.brand = brand;
         this.procSpeed = procSpeed;
         this.memory = memory;
         this.hdd = hdd;
+        this.id = id;
 
     }
 
     public String getBrand() {
         return brand;
     }
+    public int getID(){return id;}
 
     public double getProcSpeed() {
         return procSpeed;
@@ -39,13 +43,6 @@ public class Laptop {
         return hdd;
     }
 
-    static Comparator<Integer> integerComparator = (o1, o2) ->  o1.compareTo(o2);
-    static Comparator<Integer> intComparator = new Comparator<Integer>() {
-        @Override
-        public int compare(Integer o1, Integer o2) {
-            return (o1.compareTo(o2));   
-        }
-    };
 
     static Comparator<Laptop> brandComparator = (o1,o2) -> {
         int a,b;
@@ -62,24 +59,7 @@ public class Laptop {
         }
     };
     
-  /*  static Comparator<Laptop> brandComparator = new Comparator<Laptop>() {
-        @Override
-        public int compare(Laptop o1, Laptop o2) {
-            int a,b;
-            a = Character.getNumericValue(o1.brand.charAt(0));
-            b = Character.getNumericValue(o2.brand.charAt(0));
-            if(a<b){
-                return -1;
-            }
-            else if(a>b){
-                return 1;
-            }
-            else{
-                return 0;
-            }
-        }
-    };
-    */
+
     static Comparator<Laptop> processorComparator = new Comparator<Laptop>() {
         @Override
         public int compare(Laptop o1, Laptop o2) {
@@ -124,9 +104,7 @@ public class Laptop {
             }
         }
     };
-    
-    
-    
+
     public String toString(){
         String s = "";
         s+= " Brand: " + brand + "  " + procSpeed + " processor ,  "
@@ -138,28 +116,35 @@ public class Laptop {
         System.out.println("Input each laptop specs: brand,procSpeed,memory, and hdd on a single"
                 + "line seperated by spaces.");
         System.out.println("Press enter to type another or Type 'done' when finished inputing laptops");
-        
+        Connection c = warehouse.getConection();
 
         String inputData = "";
         int counter = 0;
-        laptops.add(new Laptop("Lenovo",50,20,300));
-        
-        while(!inputData.equals("done")){
-            if(counter>0){
-                System.out.println("Input  laptop or type done");
+        try {
+            laptops.add(new Laptop("Lenovo", 50, 20, 300, warehouse.getMaxID(c) +1));
+            laptops.add(new Laptop("Dell", 70, 30, 400, warehouse.getMaxID(c) +2));
+            laptops.add(new Laptop("Asus", 80, 40, 500, warehouse.getMaxID(c) +3));
+
+            while (!inputData.equals("done")) {
+                if (counter > 0) {
+                    System.out.println("Input  laptop or type done");
+                }
+                inputData = scanner.nextLine();
+                String[] s = inputData.split(" ");
+                if (inputData.equals("done")) {
+                    break;
+                }
+                //change to +1 when you get rid of other laptop add
+                Laptop l = new Laptop(s[0], Double.parseDouble(s[1]), Integer.parseInt(s[2])
+                        , Integer.parseInt(s[3]), warehouse.getMaxID(c) +2);
+                laptops.add(l);
+
+                counter++;
+
             }
-            inputData = scanner.nextLine();
-            String[] s = inputData.split(" ");
-            if(inputData.equals("done")){
-                break;
-            }
-             Laptop l = new Laptop(s[0], Double.parseDouble(s[1]), Integer.parseInt(s[2])
-                        ,Integer.parseInt(s[3]));
-            laptops.add(l);
-            
-            counter++;
+        }catch (SQLException e) {
+            e.printStackTrace();
         }
-        
         return laptops;
     }
     
@@ -190,20 +175,22 @@ public class Laptop {
     
 
     public static void main(String[] args) {
-        SQLiteDB db = new SQLiteDB("Laptop Warehouse");
-        db.createTable();
+        warehouse = new SQLiteDB("Laptop Warehouse");
+        warehouse.createTable();
+        warehouse.selectAll();
 
         Scanner scanner = new Scanner(System.in);
 
+
         ArrayList<Laptop> laptops = readLaptopInputs(scanner);
         for(Laptop laptop:laptops){
-            db.insert(laptop);
+            System.out.println(laptop.getID());
+            warehouse.insert(laptop);
         }
-        db.selectAll();
-        db.delete(1);
-        db.selectAll();
+        warehouse.selectAll();
 
-        Sorter<Laptop> laptopSorter = new Quicksorter<>(brandComparator, laptops);
+        Quicksorter<Laptop> laptopSorter = new Quicksorter<>(brandComparator, laptops);
+        warehouse.sort("RAM");
 
         laptopSorter.sort();
         System.out.print("Sorted by brand name:\n\t");
